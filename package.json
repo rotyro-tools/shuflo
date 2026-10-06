@@ -33,7 +33,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
-    "@commitlint/types": "^20.5.0",
+    "@commitlint/types": "^21.2.3",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.2.2",
