@@ -1,6 +1,6 @@
 [package]
 name = "shuflo"
-version = "0.1.0"
+version = "1.0.0"
 description = "Truly random in-place shuffle for Spotify playlists"
 authors = ["rotyro"]
 edition = "2021"
