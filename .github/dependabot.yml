@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    assignees:
+      - rotyro
+    labels:
+      - dependencies
+      - automated
+    commit-message:
+      prefix: build
+      include: scope
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: cargo
+    directory: /src-tauri
+    schedule:
+      interval: weekly
+    assignees:
+      - rotyro
+    labels:
+      - dependencies
+      - automated
+    commit-message:
+      prefix: build
+      include: scope
+    open-pull-requests-limit: 10

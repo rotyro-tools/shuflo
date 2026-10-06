@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <title>Shuflo</title>
+  </head>
+  <body
+    class="m-0 p-0 bg-neutral-900 text-white font-sans select-none flex flex-col h-screen"
+  >
+    <div class="flex-1 min-h-0 overflow-y-auto px-5 py-5">
+      <!-- Loading -->
+      <section id="view-loading" class="text-sm text-white/40">
+        Loading…
+      </section>
+
+      <!-- Setup: Spotify app + Client ID -->
+      <section id="view-setup" hidden class="space-y-4">
+        <p
+          id="setup-step"
+          class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+        ></p>
+        <h1 class="text-lg font-semibold tracking-tight">
+          Add your Spotify app
+        </h1>
+        <p class="text-sm text-white/60">
+          Shuflo talks to Spotify through a free developer app. Create it once,
+          logged in as the account that owns the playlist (it needs Premium).
+        </p>
+        <ol class="space-y-3 text-sm text-white/70">
+          <li class="flex gap-3">
+            <span
+              class="shrink-0 w-5 h-5 rounded-full bg-white/10 text-[11px] text-white/60 flex items-center justify-center"
+              >1</span
+            >
+            <p>
+              Open the
+              <button
+                id="btn-open-dashboard"
+                class="text-sky-300 hover:text-sky-200 underline underline-offset-2 cursor-pointer"
+              >
+                Spotify Developer Dashboard</button
+              >, click <b class="font-medium text-white/90">Create app</b> and
+              tick <b class="font-medium text-white/90">Web API</b>.
+            </p>
+          </li>
+          <li class="flex gap-3">
+            <span
+              class="shrink-0 w-5 h-5 rounded-full bg-white/10 text-[11px] text-white/60 flex items-center justify-center"
+              >2</span
+            >
+            <div class="flex-1 min-w-0 space-y-1.5">
+              <p>
+                Add both
+                <b class="font-medium text-white/90">Redirect URIs</b>:
+              </p>
+              <div
+                class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md bg-white/5 border border-white/10"
+              >
+                <code class="text-[12px] text-white/80 truncate select-text"
+                  >http://127.0.0.1:8898/callback</code
+                >
+                <button
+                  data-copy="http://127.0.0.1:8898/callback"
+                  class="shrink-0 text-[11px] text-white/40 hover:text-white/80 cursor-pointer transition-colors"
+                >
+                  Copy
+                </button>
+              </div>
+              <div
+                class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md bg-white/5 border border-white/10"
+              >
+                <code class="text-[12px] text-white/80 truncate select-text"
+                  >http://127.0.0.1:8899/callback</code
+                >
+                <button
+                  data-copy="http://127.0.0.1:8899/callback"
+                  class="shrink-0 text-[11px] text-white/40 hover:text-white/80 cursor-pointer transition-colors"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <span
+              class="shrink-0 w-5 h-5 rounded-full bg-white/10 text-[11px] text-white/60 flex items-center justify-center"
+              >3</span
+            >
+            <p>
+              Save, then copy the app's
+              <b class="font-medium text-white/90">Client ID</b> and paste it
+              here:
+            </p>
+          </li>
+        </ol>
+        <input
+          id="client-id"
+          type="text"
+          spellcheck="false"
+          autocomplete="off"
+          placeholder="Client ID"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/25 focus:outline-none focus:border-sky-500/50 font-mono select-text"
+        />
+        <div class="flex gap-2">
+          <button
+            id="btn-save-client-id"
+            class="flex-1 py-2.5 text-sm rounded-lg bg-sky-600/30 border border-sky-500/40 text-sky-100 hover:bg-sky-600/45 cursor-pointer transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Continue
+          </button>
+        </div>
+        <div
+          id="setup-error"
+          hidden
+          class="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0 mt-px"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4" />
+            <path d="M12 16h.01" />
+          </svg>
+          <p class="text-[12px]"></p>
+        </div>
+      </section>
+
+      <!-- Connect -->
+      <section id="view-connect" hidden class="space-y-4">
+        <button
+          id="btn-connect-back"
+          class="-ml-1 flex items-center gap-1 text-[12px] text-white/50 hover:text-white/80 cursor-pointer transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <p
+          id="connect-step"
+          class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+        ></p>
+        <h1 class="text-lg font-semibold tracking-tight">Connect Spotify</h1>
+        <p class="text-sm text-white/60">
+          Log in with the account that owns the playlist, or one of its
+          collaborators. Your browser opens to finish the login, then come back
+          here.
+        </p>
+        <div
+          id="connect-app"
+          class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10"
+        >
+          <div class="min-w-0">
+            <p
+              class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+            >
+              Spotify app
+            </p>
+            <p class="text-[12px] text-white/60 truncate">
+              Client ID
+              <code id="connect-client-id" class="text-white/80"></code>
+            </p>
+          </div>
+          <button
+            id="btn-change-client-id"
+            class="shrink-0 px-3 py-1.5 text-[12px] rounded-lg border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 cursor-pointer transition-colors"
+          >
+            Change
+          </button>
+        </div>
+        <button
+          id="btn-connect"
+          class="w-full py-2.5 text-sm rounded-lg bg-sky-600/30 border border-sky-500/40 text-sky-100 hover:bg-sky-600/45 cursor-pointer transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Connect Spotify
+        </button>
+        <div
+          id="connect-error"
+          hidden
+          class="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0 mt-px"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4" />
+            <path d="M12 16h.01" />
+          </svg>
+          <p class="text-[12px]"></p>
+        </div>
+        <div
+          id="connect-help"
+          class="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-sky-500/10 border border-sky-500/20"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0 mt-px text-sky-300"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
+          <p class="text-[12px] text-sky-100/80">
+            If Spotify shows "Invalid client" or "Invalid redirect URI", go back
+            and check the Client ID and both redirect URIs.
+          </p>
+        </div>
+      </section>
+
+      <!-- Choose playlist -->
+      <section id="view-choose" hidden class="space-y-4">
+        <p
+          id="choose-step"
+          class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+        ></p>
+        <h1 class="text-lg font-semibold tracking-tight">
+          Choose the playlist
+        </h1>
+        <div class="space-y-2">
+          <select
+            id="playlist-select"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-sky-500/50 cursor-pointer appearance-none"
+          ></select>
+          <p id="playlist-select-status" class="text-[11px] text-white/30"></p>
+        </div>
+        <div class="space-y-2">
+          <p
+            class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+          >
+            Or paste a link
+          </p>
+          <input
+            id="playlist-link"
+            type="text"
+            spellcheck="false"
+            placeholder="https://open.spotify.com/playlist/…"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/25 focus:outline-none focus:border-sky-500/50 select-text"
+          />
+        </div>
+        <div class="flex gap-2">
+          <button
+            id="btn-use-playlist"
+            class="flex-1 py-2 text-sm rounded-lg bg-sky-600/30 border border-sky-500/40 text-sky-100 hover:bg-sky-600/45 cursor-pointer transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Use this playlist
+          </button>
+          <button
+            id="btn-cancel-choose"
+            hidden
+            class="px-4 py-2 text-sm rounded-lg border border-white/10 bg-white/5 text-white/50 hover:bg-white/10 cursor-pointer transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+        <div
+          id="choose-error"
+          hidden
+          class="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0 mt-px"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4" />
+            <path d="M12 16h.01" />
+          </svg>
+          <p class="text-[12px]"></p>
+        </div>
+      </section>
+
+      <!-- Ready -->
+      <section id="view-ready" hidden class="flex flex-col gap-5">
+        <div
+          class="rounded-xl bg-white/5 border border-white/10 p-4 flex items-center gap-4"
+        >
+          <!-- Cover, with a note icon when the playlist has none -->
+          <div
+            class="relative w-16 h-16 shrink-0 rounded-lg bg-white/5 overflow-hidden flex items-center justify-center text-white/20"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+            <img
+              id="playlist-cover"
+              alt=""
+              hidden
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div class="flex-1 min-w-0 space-y-0.5">
+            <div class="flex items-center justify-between gap-2">
+              <p
+                class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+              >
+                Playlist
+              </p>
+              <button
+                id="btn-change-playlist"
+                class="text-[11px] text-white/30 hover:text-white/60 cursor-pointer transition-colors"
+              >
+                Change
+              </button>
+            </div>
+            <p id="playlist-name" class="text-base font-semibold truncate"></p>
+            <p
+              id="playlist-meta"
+              class="text-[12px] text-white/50 truncate"
+            ></p>
+          </div>
+        </div>
+
+        <button
+          id="btn-shuffle"
+          class="w-full py-3 text-sm rounded-lg bg-sky-600/40 border border-sky-500/50 text-white hover:bg-sky-600/55 cursor-pointer transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Shuffle playlist
+        </button>
+
+        <div id="progress" hidden class="space-y-1.5">
+          <div class="h-1.5 rounded-full bg-white/10 overflow-hidden">
+            <div
+              id="progress-bar"
+              class="h-full w-0 rounded-full bg-sky-500 transition-[width] duration-200"
+            ></div>
+          </div>
+          <p id="progress-text" class="text-[12px] text-white/50"></p>
+        </div>
+
+        <div
+          id="result"
+          hidden
+          class="flex items-center gap-3 px-3.5 py-3 rounded-xl border"
+        >
+          <span id="result-icon" class="shrink-0 flex"></span>
+          <p id="result-text" class="flex-1 min-w-0 text-[13px]"></p>
+          <button
+            id="btn-open-spotify"
+            hidden
+            class="shrink-0 px-3 py-1.5 text-[12px] rounded-lg border border-white/15 bg-white/10 text-white/80 hover:bg-white/15 cursor-pointer transition-colors"
+          >
+            Open in Spotify
+          </button>
+        </div>
+
+        <div
+          class="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-sky-500/10 border border-sky-500/20"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0 mt-px text-sky-300"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
+          <p class="text-[12px] text-sky-100/80">
+            Play the playlist with Spotify's shuffle turned off, so it plays in
+            Shuflo's order.
+          </p>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="view-settings" hidden class="space-y-5">
+        <div class="space-y-3">
+          <button
+            id="btn-back"
+            class="-ml-1 flex items-center gap-1 text-[12px] text-white/50 hover:text-white/80 cursor-pointer transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            Back
+          </button>
+          <h1 class="text-lg font-semibold tracking-tight">Settings</h1>
+        </div>
+
+        <!-- Account -->
+        <div class="space-y-2">
+          <p
+            class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+          >
+            Spotify account
+          </p>
+          <div class="flex items-center justify-between gap-3">
+            <span
+              id="settings-account"
+              class="text-sm text-white/70 truncate"
+            ></span>
+            <button
+              id="btn-logout"
+              class="shrink-0 px-3 py-1.5 text-[12px] rounded-lg border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Log out
+            </button>
+          </div>
+          <p id="keychain-warning" hidden class="text-[11px] text-amber-300/80">
+            The system keychain isn't available, so you'll need to log in again
+            after Shuflo restarts.
+          </p>
+        </div>
+
+        <div class="border-t border-white/6"></div>
+
+        <!-- Launch at login -->
+        <div class="space-y-1">
+          <div class="flex items-center justify-between">
+            <label
+              for="launch-at-login"
+              class="text-sm text-white/70 cursor-pointer"
+              >Launch at login</label
+            >
+            <input
+              id="launch-at-login"
+              type="checkbox"
+              class="accent-sky-500 w-4 h-4 cursor-pointer"
+            />
+          </div>
+          <p id="launch-error" class="text-[11px] text-red-300/90"></p>
+        </div>
+
+        <div class="border-t border-white/6"></div>
+
+        <!-- Restore -->
+        <div class="space-y-2">
+          <p
+            class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+          >
+            Restore previous order
+          </p>
+          <p class="text-[11px] text-white/30">
+            Shuflo saves the playlist's order before every change. It keeps the
+            10 most recent.
+          </p>
+          <div id="backup-list" class="space-y-1.5"></div>
+          <p id="restore-status" class="text-[11px] text-white/50"></p>
+        </div>
+
+        <div class="border-t border-white/6"></div>
+
+        <!-- Advanced -->
+        <div class="space-y-2">
+          <p
+            class="text-[10px] uppercase tracking-widest text-white/30 font-medium"
+          >
+            Advanced
+          </p>
+          <label
+            for="settings-client-id"
+            class="block text-[12px] text-white/50"
+            >Spotify Client ID</label
+          >
+          <div class="flex gap-2">
+            <input
+              id="settings-client-id"
+              type="text"
+              spellcheck="false"
+              autocomplete="off"
+              class="flex-1 min-w-0 px-3 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/25 focus:outline-none focus:border-sky-500/50 font-mono select-text"
+            />
+            <button
+              id="btn-settings-save-client-id"
+              class="shrink-0 px-3 py-1.5 text-[12px] rounded-lg border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Save
+            </button>
+          </div>
+          <p id="settings-client-id-hint" class="text-[11px] text-white/30"></p>
+          <button
+            id="btn-open-backups"
+            class="shrink-0 px-3 py-1.5 text-[12px] rounded-lg border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Open backups folder
+          </button>
+        </div>
+
+        <div class="border-t border-white/6"></div>
+
+        <!-- About -->
+        <div class="space-y-1">
+          <div class="flex items-center justify-between gap-3">
+            <span
+              id="app-version"
+              class="text-[12px] text-white/40 font-mono"
+            ></span>
+            <button
+              id="btn-update"
+              class="shrink-0 px-3 py-1.5 text-[12px] rounded-lg border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Check for Updates
+            </button>
+          </div>
+          <p id="update-status" class="text-[11px] text-white/40"></p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer: account + Settings, once setup is done -->
+    <div
+      id="footer"
+      hidden
+      class="flex items-center justify-between gap-3 px-5 py-3 border-t border-white/6 shrink-0"
+    >
+      <span id="account" class="text-[12px] text-white/40 truncate"></span>
+      <button
+        id="btn-settings"
+        class="shrink-0 flex items-center gap-1.5 -mr-2 px-2 py-1.5 rounded-lg text-[12px] text-white/50 hover:text-white/80 hover:bg-white/5 cursor-pointer transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+          />
+        </svg>
+        Settings
+      </button>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

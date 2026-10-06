@@ -1,0 +1,63 @@
+name: 'Bug Report'
+description: 'Report a reproducible bug or unexpected behavior.'
+title: '[Bug Report] '
+labels: ['bug']
+type: Bug Report
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve **Shuflo**!
+        Please include enough detail to help us reproduce the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: What is happening?
+      placeholder: |
+        When I click Shuffle playlist, the progress bar stops at "Reading… 200 of 1,000".
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened instead?
+      placeholder: |
+        The playlist should be shuffled and the status should read "Playlist shuffled".
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Open Shuflo and pick a playlist
+        2. Click Shuffle playlist
+        3. See...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Provide relevant details about your environment.
+      placeholder: |
+        - OS: macOS 15.0 (Apple Silicon)
+        - Shuflo: 1.0.0
+        - Playlist size: 1,000 tracks
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output
+      description: Paste any relevant logs, stack traces, or console output.
+      render: shell
+    validations:
+      required: false

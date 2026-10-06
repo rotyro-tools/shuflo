@@ -1,0 +1,25 @@
+blank_issues_enabled: false
+
+issue_templates:
+  - name: 'Bug Report'
+    description: 'Report a reproducible bug or unexpected behavior.'
+    title: '[Bug Report] '
+    labels: ['bug']
+    file: 'bug_report.yml'
+
+  - name: 'Feature Request'
+    description: 'Suggest a new feature or improvement.'
+    title: '[Feature Request] '
+    labels: ['enhancement']
+    file: 'feature_request.yml'
+
+  - name: 'Question'
+    description: 'Ask about usage, setup, or behavior clarification.'
+    title: '[Question] '
+    labels: ['question']
+    file: 'question.yml'
+
+contact_links:
+  - name: Discussions
+    url: https://github.com/rotyro-tools/shuflo/discussions
+    about: Use Discussions for more general questions and conversations.

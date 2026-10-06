@@ -1,0 +1,47 @@
+name: 'Feature Request'
+description: 'Suggest a new feature or improvement.'
+title: '[Feature Request] '
+labels: ['enhancement']
+type: Feature Request
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea to improve **Shuflo**?
+        Please describe it below.
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Problem or motivation
+      description: What problem or use case would this feature solve?
+      placeholder: |
+        I want to shuffle two playlists at once.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the feature or enhancement you'd like to see.
+      placeholder: |
+        Let me pick several playlists in Settings and shuffle them all with one click.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any screenshots, links, or other context that might help.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you tried any workarounds?
+    validations:
+      required: false
