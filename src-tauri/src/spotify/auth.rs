@@ -12,7 +12,7 @@ use sha2::{Digest, Sha256};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_opener::OpenerExt;
 
-use super::api::{ApiError, SpotifyClient, TokenSource, User};
+use super::api::{http_client, ApiError, SpotifyClient, TokenSource, User};
 use crate::state::{AccessToken, AppState};
 
 pub const ACCOUNTS_BASE: &str = "https://accounts.spotify.com";
@@ -244,13 +244,6 @@ pub async fn logout(app: &AppHandle) {
         Ok(()) | Err(keyring::Error::NoEntry) => {}
         Err(e) => eprintln!("[shuflo] keychain delete failed: {e}"),
     }
-}
-
-fn http_client() -> reqwest::Client {
-    reqwest::Client::builder()
-        .timeout(Duration::from_secs(30))
-        .build()
-        .unwrap_or_default()
 }
 
 /// A valid access token, refreshed when it is close to expiry or when `force` is set.

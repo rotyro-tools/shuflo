@@ -273,6 +273,21 @@ fn retry_after(resp: &reqwest::Response) -> Duration {
         .unwrap_or(Duration::from_secs(1))
 }
 
+fn build_http_client(https_only: bool) -> reqwest::Client {
+    reqwest::Client::builder()
+        .timeout(Duration::from_secs(30))
+        .https_only(https_only)
+        .build()
+        .expect("failed to set up the HTTPS client")
+}
+
+/// HTTP client for every Spotify call. Outside tests it refuses plain-HTTP URLs, so a
+/// token can never be sent unencrypted, whatever base URL it is given.
+pub fn http_client() -> reqwest::Client {
+    // Tests talk to a local mock server over plain HTTP.
+    build_http_client(!cfg!(test))
+}
+
 pub struct SpotifyClient {
     http: reqwest::Client,
     api_base: String,
@@ -286,12 +301,8 @@ impl SpotifyClient {
     }
 
     pub fn with_base(api_base: &str, retry: RetryPolicy, tokens: Arc<dyn TokenSource>) -> Self {
-        let http = reqwest::Client::builder()
-            .timeout(Duration::from_secs(30))
-            .build()
-            .unwrap_or_default();
         Self {
-            http,
+            http: http_client(),
             api_base: api_base.trim_end_matches('/').to_string(),
             retry,
             tokens,
@@ -756,6 +767,16 @@ mod tests {
         );
         assert_eq!(pick_image(&[img("60", Some(60))]).as_deref(), Some("60"));
         assert_eq!(pick_image(&[]), None);
+    }
+
+    #[tokio::test]
+    async fn the_app_client_refuses_plain_http() {
+        let err = build_http_client(true)
+            .get("http://127.0.0.1:9/token")
+            .send()
+            .await
+            .unwrap_err();
+        assert!(err.is_builder(), "{err}");
     }
 
     #[test]

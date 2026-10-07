@@ -72,23 +72,22 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            if let WindowEvent::CloseRequested { api, .. } = event {
-                if window.label() != "main" {
-                    return;
-                }
+            let WindowEvent::CloseRequested { api, .. } = event else {
+                return;
+            };
+            if window.label() != "main" {
+                return;
+            }
+            if window.state::<AppState>().is_running() {
                 // Quitting mid-write would leave the playlist half rewritten.
-                if window.state::<AppState>().is_running() {
-                    api.prevent_close();
-                    let _ = window.emit_to("main", "close-blocked", ());
-                    return;
-                }
+                api.prevent_close();
+                let _ = window.emit_to("main", "close-blocked", ());
+            } else if cfg!(target_os = "macos") {
                 // macOS keeps running in the Dock (clicking the icon reopens the window);
                 // on Windows and Linux closing the last window quits, as apps do there.
-                #[cfg(target_os = "macos")]
-                {
-                    api.prevent_close();
-                    let _ = window.hide();
-                }
+                // cfg! (not #[cfg]) keeps this code compiled and linted on every platform.
+                api.prevent_close();
+                let _ = window.hide();
             }
         })
         .invoke_handler(tauri::generate_handler![
